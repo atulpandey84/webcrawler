@@ -1,0 +1,9 @@
+requests
+beautifulsoup4
+ollama
+Flask
+trafilatura
+pypdf
+Flask-SQLAlchemy
+Flask-Migrate
+playwright

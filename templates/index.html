@@ -3,240 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Web Crawler Chat & Analytics</title>
+    <title>AI Web Crawler Insights</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .sidebar { width: 260px; transition: all 0.3s; }
-        .chat-area { flex: 1; }
-        .message-bubble { max-width: 80%; padding: 0.75rem 1rem; border-radius: 1rem; margin-bottom: 1rem; }
-        .ai-message p { margin-bottom: 0.5rem; }
-        .ai-message ul, .ai-message ol { margin-left: 1.5rem; margin-bottom: 0.5rem; }
-        .ai-message ul { list-style-type: disc; }
-        .ai-message ol { list-style-type: decimal; }
-        .user-message { background-color: #3b82f6; color: white; align-self: flex-end; }
-        .ai-message { background-color: #f3f4f6; color: #1f2937; align-self: flex-start; }
-        .analytics-message { border-left: 4px solid #10b981; background-color: #ecfdf5; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        #chat-messages { height: calc(100vh - 220px); overflow-y: auto; }
+        .chat-container { height: calc(100vh - 160px); }
         .spinner {
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            width: 20px;
-            height: 20px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            border-left-color: #3b82f6;
+            border-left-color: #09f;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body class="bg-white font-sans flex h-screen overflow-hidden">
-    <!-- Sidebar -->
-    <div class="sidebar bg-gray-900 text-white flex flex-col h-full border-r border-gray-700">
-        <div class="p-4">
-            <button id="new-chat" class="w-full border border-gray-600 rounded-md py-2 px-4 flex items-center hover:bg-gray-800 transition">
-                <i class="fas fa-plus mr-2"></i> New Chat
-            </button>
-        </div>
-        <div class="p-4">
-            <input type="text" id="search-history" placeholder="Search history..." class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
-        </div>
-        <div id="history-list" class="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-hide">
-            <!-- Sessions will be loaded here -->
-        </div>
-    </div>
-
-    <!-- Main Chat Area -->
-    <div class="chat-area flex flex-col h-full">
-        <header class="p-4 border-b border-gray-200 flex justify-between items-center bg-white z-10">
-            <h1 id="current-title" class="text-lg font-semibold truncate max-w-md">AI Web Crawler & Analytics</h1>
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center space-x-2">
-                    <label class="text-sm text-gray-600">Model:</label>
-                    <input type="text" id="model" value="llama3" class="text-sm border rounded px-2 py-1 w-24">
-                </div>
-                <div class="flex items-center space-x-4 border-l pl-4">
-                    <div class="flex items-center space-x-1">
-                        <input type="checkbox" id="recursive" class="rounded border-gray-300">
-                        <label for="recursive" class="text-sm text-gray-600">Recursive</label>
-                    </div>
-                    <div class="flex items-center space-x-1">
-                        <input type="checkbox" id="dynamic" class="rounded border-gray-300">
-                        <label for="dynamic" class="text-sm text-gray-600">Dynamic</label>
-                    </div>
-                    <div class="flex items-center space-x-1 text-green-600 font-medium">
-                        <input type="checkbox" id="analytics-toggle" class="rounded border-gray-300">
-                        <label for="analytics-toggle" class="text-sm">Deep Analytics</label>
-                    </div>
-                </div>
-            </div>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-4xl mx-auto p-4">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">AI Web Crawler</h1>
+            <p class="text-gray-600">Extract insights from any website using Ollama</p>
         </header>
 
-        <main id="chat-messages" class="flex-1 p-4 flex flex-col space-y-4">
-            <div class="ai-message message-bubble">
-                Hello! Enter a website URL or PDF link. Enable **Deep Analytics** to perform rigorous analysis of reviews, likes, and comments.
-            </div>
-        </main>
-
-        <footer class="p-4 border-t border-gray-200 bg-white">
-            <div class="max-w-3xl mx-auto flex flex-col space-y-2">
-                <div class="flex space-x-4">
-                    <div class="flex-1 relative">
-                        <input type="text" id="url-input" placeholder="Enter URL (first time)..." class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none mb-2 block">
-                        <textarea id="prompt-input" rows="1" placeholder="Send a message..." class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"></textarea>
-                    </div>
-                    <button id="send-btn" class="bg-blue-600 text-white rounded-lg px-4 h-10 self-end hover:bg-blue-700 transition">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+        <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Website URL</label>
+                    <input type="url" id="url" placeholder="https://example.com" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2">
                 </div>
-                <p class="text-xs text-gray-400 text-center">Tip: Enable **Dynamic** mode if the page uses JavaScript to load comments or likes.</p>
+                <div class="flex space-x-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700">Ollama Model</label>
+                        <input type="text" id="model" value="llama3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Custom Prompt (Optional)</label>
+                    <textarea id="prompt" rows="2" placeholder="e.g., Summarize the main points in bullet points" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"></textarea>
+                </div>
+                <button id="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-150">
+                    Get Insights
+                </button>
             </div>
-        </footer>
+        </div>
+
+        <div id="results-container" class="hidden bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Insights</h2>
+            <div id="loading" class="flex justify-center items-center py-8 hidden">
+                <div class="spinner"></div>
+                <span class="ml-3 text-gray-600">Processing website...</span>
+            </div>
+            <div id="output" class="prose max-w-none text-gray-700 whitespace-pre-wrap"></div>
+        </div>
     </div>
 
     <script>
-        let currentSessionId = null;
-        const chatMessages = document.getElementById('chat-messages');
-        const historyList = document.getElementById('history-list');
-        const searchHistory = document.getElementById('search-history');
-        const urlInput = document.getElementById('url-input');
-        const promptInput = document.getElementById('prompt-input');
-        const sendBtn = document.getElementById('send-btn');
-        const currentTitle = document.getElementById('current-title');
-        const analyticsToggle = document.getElementById('analytics-toggle');
-
-        async function loadSessions(query = '') {
-            const res = await fetch(`/api/sessions?q=${encodeURIComponent(query)}`);
-            const sessions = await res.json();
-            historyList.innerHTML = '';
-            sessions.forEach(s => {
-                const item = document.createElement('div');
-                item.className = 'p-3 text-sm rounded-md hover:bg-gray-800 cursor-pointer truncate flex items-center';
-                item.innerHTML = `<i class="far fa-message mr-2"></i> ${s.url}`;
-                item.onclick = () => loadSession(s.id);
-                historyList.appendChild(item);
-            });
-        }
-
-        searchHistory.addEventListener('input', (e) => {
-            loadSessions(e.target.value);
-        });
-
-        async function loadSession(id) {
-            currentSessionId = id;
-            const res = await fetch(`/api/sessions/${id}`);
-            const session = await res.json();
-            currentTitle.textContent = session.url;
-            urlInput.classList.add('hidden');
-            chatMessages.innerHTML = '';
-            session.messages.forEach(m => addMessage(m.role, m.content, m.is_analytics));
-            scrollToBottom();
-        }
-
-        document.getElementById('new-chat').onclick = () => {
-            currentSessionId = null;
-            currentTitle.textContent = 'AI Web Crawler & Analytics';
-            urlInput.classList.remove('hidden');
-            urlInput.value = '';
-            promptInput.value = '';
-            chatMessages.innerHTML = '<div class="ai-message message-bubble">Hello! Enter a website URL or PDF link. Enable **Deep Analytics** to perform rigorous analysis of reviews, likes, and comments.</div>';
-        };
-
-        function addMessage(role, content, isAnalytics = false) {
-            const div = document.createElement('div');
-            div.className = `message-bubble ${role === 'user' ? 'user-message' : 'ai-message'}`;
-            if (isAnalytics) div.classList.add('analytics-message');
-
-            if (role === 'user') {
-                div.textContent = content;
-            } else {
-                div.innerHTML = marked.parse(content);
-            }
-            chatMessages.appendChild(div);
-            return div;
-        }
-
-        function scrollToBottom() {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        sendBtn.onclick = async () => {
-            const url = urlInput.value;
-            const prompt = promptInput.value;
+        document.getElementById('submit').addEventListener('click', async () => {
+            const url = document.getElementById('url').value;
             const model = document.getElementById('model').value;
-            const recursive = document.getElementById('recursive').checked;
-            const dynamic = document.getElementById('dynamic').checked;
-            const analytics = analyticsToggle.checked;
+            const prompt = document.getElementById('prompt').value;
+            const resultsContainer = document.getElementById('results-container');
+            const loading = document.getElementById('loading');
+            const output = document.getElementById('output');
+            const submitBtn = document.getElementById('submit');
 
-            if (!prompt && !analytics) return;
-            if (!currentSessionId && !url) {
-                alert('Please provide a URL for the first message');
+            if (!url) {
+                alert('Please enter a URL');
                 return;
             }
 
-            addMessage('user', prompt || "Deep Analytics requested");
-            promptInput.value = '';
-            const aiMsgDiv = addMessage('assistant', '', analytics);
-            const loadingSpan = document.createElement('div');
-            loadingSpan.className = 'spinner mt-2';
-            aiMsgDiv.appendChild(loadingSpan);
-            scrollToBottom();
-
-            sendBtn.disabled = true;
+            resultsContainer.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            output.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50');
 
             try {
-                const response = await fetch('/api/chat', {
+                const response = await fetch('/api/insights', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url, session_id: currentSessionId, prompt, model, recursive, dynamic, analytics })
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url, model, prompt }),
                 });
 
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                aiMsgDiv.removeChild(loadingSpan);
+                const data = await response.json();
 
-                let fullAiContent = "";
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-
-                    const chunk = decoder.decode(value);
-                    const lines = chunk.split('\n');
-                    lines.forEach(line => {
-                        if (line.startsWith('data: ')) {
-                            try {
-                                const data = JSON.parse(line.substring(6));
-                                if (data.chunk) {
-                                    fullAiContent += data.chunk;
-                                    aiMsgDiv.innerHTML = marked.parse(fullAiContent);
-                                    scrollToBottom();
-                                }
-                                if (data.done) {
-                                    currentSessionId = data.session_id;
-                                    urlInput.classList.add('hidden');
-                                    loadSessions();
-                                }
-                            } catch (e) {}
-                        }
-                    });
+                if (data.error) {
+                    output.innerHTML = `<span class="text-red-500">Error: ${data.error}</span>`;
+                } else {
+                    output.textContent = data.insights;
                 }
             } catch (error) {
-                aiMsgDiv.textContent = 'Error: ' + error.message;
+                output.innerHTML = `<span class="text-red-500">Error: ${error.message}</span>`;
             } finally {
-                sendBtn.disabled = false;
-            }
-        };
-
-        promptInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendBtn.click();
+                loading.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50');
             }
         });
-
-        loadSessions();
     </script>
 </body>
 </html>

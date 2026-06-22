@@ -1,6 +1,6 @@
 # AI Local Web Crawler with Ollama
 
-This tool allows you to crawl a website and generate insights using a local Ollama instance.
+This tool allows you to crawl a website and generate insights using a local Ollama instance. It provides both a command-line interface and a ChatGPT-like web interface.
 
 ## Prerequisites
 
@@ -17,13 +17,25 @@ pip install -r requirements.txt
 
 ## Usage
 
+### Web Interface (Recommended)
+
+Start the Flask web server:
+
+```bash
+python3 app.py
+```
+
+Then, open your browser and navigate to `http://localhost:5000`.
+
+### Command-Line Interface
+
 Run the crawler by providing a URL:
 
 ```bash
 python3 crawler.py https://example.com
 ```
 
-### Options
+#### Options
 
 -   `--model`: Specify the Ollama model to use (default: `llama3`).
     ```bash

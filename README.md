@@ -1,15 +1,22 @@
-# AI Local Web Crawler with Ollama
+# AI Local Web Crawler & Chat
 
-This tool allows you to crawl a website and generate insights using a local Ollama instance. It provides both a command-line interface and a ChatGPT-like web interface.
+An advanced AI tool to extract insights from websites and PDFs using local Ollama models. Featuring recursive crawling, multi-turn chat history, and streaming responses.
+
+## Key Features
+
+-   **True Recursive Crawling**: Follow internal links to analyze entire websites.
+-   **Conversational Chat**: Multi-turn interface to ask follow-up questions about the extracted content.
+-   **Streaming Responses**: Character-by-character response delivery for a snappy feel.
+-   **Multi-format Support**: Extracts text from both websites and PDF files.
+-   **Local History**: Persistent chat sessions stored in a local SQLite database.
+-   **Enhanced Extraction**: Uses `trafilatura` for clean, noise-free text extraction.
 
 ## Prerequisites
 
-1.  **Ollama**: Ensure you have [Ollama](https://ollama.com/) installed and running on your machine.
-2.  **Python**: Ensure you have Python 3.x installed.
+1.  **Ollama**: Install and run [Ollama](https://ollama.com/).
+2.  **Python**: Python 3.x required.
 
 ## Installation
-
-Install the required Python dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -19,37 +26,20 @@ pip install -r requirements.txt
 
 ### Web Interface (Recommended)
 
-Start the Flask web server:
-
 ```bash
 python3 app.py
 ```
-
-Then, open your browser and navigate to `http://localhost:5000`.
+Access the interface at `http://localhost:5000`.
 
 ### Command-Line Interface
 
-Run the crawler by providing a URL:
-
 ```bash
-python3 crawler.py https://example.com
+python3 crawler.py https://example.com --recursive --pages 5
 ```
-
-#### Options
-
--   `--model`: Specify the Ollama model to use (default: `llama3`).
-    ```bash
-    python3 crawler.py https://example.com --model mistral
-    ```
--   `--prompt`: Provide a custom prompt for generating insights.
-    ```bash
-    python3 crawler.py https://example.com --prompt "Summarize this content in 3 bullet points"
-    ```
 
 ## Testing
 
-You can run the included tests to verify the tool's logic:
-
+Run the enhanced test suite:
 ```bash
-python3 test_crawler.py
+python3 test_crawler_enhanced.py
 ```

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Web Crawler Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .chat-container { height: calc(100vh - 160px); }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-4xl mx-auto p-4">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">AI Web Crawler</h1>
+            <p class="text-gray-600">Extract insights from any website using Ollama</p>
+        </header>
+
+        <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Website URL</label>
+                    <input type="url" id="url" placeholder="https://example.com" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2">
+                </div>
+                <div class="flex space-x-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700">Ollama Model</label>
+                        <input type="text" id="model" value="llama3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Custom Prompt (Optional)</label>
+                    <textarea id="prompt" rows="2" placeholder="e.g., Summarize the main points in bullet points" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"></textarea>
+                </div>
+                <button id="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-150">
+                    Get Insights
+                </button>
+            </div>
+        </div>
+
+        <div id="results-container" class="hidden bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Insights</h2>
+            <div id="loading" class="flex justify-center items-center py-8 hidden">
+                <div class="spinner"></div>
+                <span class="ml-3 text-gray-600">Processing website...</span>
+            </div>
+            <div id="output" class="prose max-w-none text-gray-700 whitespace-pre-wrap"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('submit').addEventListener('click', async () => {
+            const url = document.getElementById('url').value;
+            const model = document.getElementById('model').value;
+            const prompt = document.getElementById('prompt').value;
+            const resultsContainer = document.getElementById('results-container');
+            const loading = document.getElementById('loading');
+            const output = document.getElementById('output');
+            const submitBtn = document.getElementById('submit');
+
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+
+            resultsContainer.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            output.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50');
+
+            try {
+                const response = await fetch('/api/insights', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url, model, prompt }),
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    output.innerHTML = `<span class="text-red-500">Error: ${data.error}</span>`;
+                } else {
+                    output.textContent = data.insights;
+                }
+            } catch (error) {
+                output.innerHTML = `<span class="text-red-500">Error: ${error.message}</span>`;
+            } finally {
+                loading.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50');
+            }
+        });
+    </script>
+</body>
+</html>

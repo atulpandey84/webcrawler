@@ -8,12 +8,8 @@ def crawl_website(url):
     """
     Fetches the content of a website and extracts clean text.
     """
-    try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching the URL: {e}")
-        sys.exit(1)
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
 
     soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -62,7 +58,11 @@ def main():
     args = parser.parse_args()
 
     print(f"Crawling {args.url}...")
-    content = crawl_website(args.url)
+    try:
+        content = crawl_website(args.url)
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
 
     # Basic truncation if content is too long for a typical LLM context window (optional, but good for stability)
     # Most local models handle 4k-8k tokens, so we'll do a rough character limit for now.
